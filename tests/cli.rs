@@ -1,6 +1,7 @@
 use std::fs;
 use std::path::Path;
 use std::path::PathBuf;
+use std::str::FromStr;
 use std::thread;
 use std::time::Duration;
 
@@ -648,4 +649,63 @@ fn member_commands_support_global_identity_flag() {
         .assert()
         .success()
         .stdout(predicate::str::contains("bob"));
+}
+
+#[test]
+fn member_add_allows_second_initialized_identity_to_read_existing_secrets() {
+    let temp = tempfile::tempdir().expect("tempdir");
+    let identity_dir = temp.path().join("ids");
+    fs::create_dir_all(&identity_dir).expect("mkdir ids");
+    let a_identity = identity_dir.join("a.age");
+    let b_identity = identity_dir.join("b.age");
+
+    cmd_with_global_identity(&temp, &a_identity, "alice").args(["init"]).assert().success();
+    cmd_with_global_identity(&temp, &a_identity, "alice")
+        .args(["set", "DATABASE_URL", "postgres://alice@localhost/app"])
+        .assert()
+        .success();
+
+    let before = read_envkey(&temp);
+    assert!(before.team.contains_key("alice"));
+    assert!(!before.team.contains_key("bob"));
+    let before_value = before
+        .default_env()
+        .expect("default env")
+        .get("DATABASE_URL")
+        .expect("database_url")
+        .value
+        .clone();
+
+    cmd_with_global_identity(&temp, &b_identity, "alice").args(["init"]).assert().success();
+    let after_b_init = read_envkey(&temp);
+    assert!(after_b_init.team.contains_key("alice"));
+    assert!(!after_b_init.team.contains_key("bob"));
+
+    let b_secret = fs::read_to_string(&b_identity).expect("read b identity");
+    let b_identity_value = b_secret.lines().next().expect("identity line");
+    let b_pubkey = x25519::Identity::from_str(b_identity_value)
+        .expect("parse b identity")
+        .to_public()
+        .to_string();
+
+    cmd_with_global_identity(&temp, &a_identity, "alice")
+        .args(["member", "add", "bob", &b_pubkey])
+        .assert()
+        .success();
+
+    let after_add = read_envkey(&temp);
+    let after_value = after_add
+        .default_env()
+        .expect("default env")
+        .get("DATABASE_URL")
+        .expect("database_url")
+        .value
+        .clone();
+    assert_ne!(before_value, after_value);
+
+    cmd_with_global_identity(&temp, &b_identity, "bob")
+        .args(["get", "DATABASE_URL"])
+        .assert()
+        .success()
+        .stdout("postgres://alice@localhost/app\n");
 }
