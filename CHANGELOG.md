@@ -25,6 +25,7 @@ Semantic Versioning.
   - `.github/workflows/release-please.yml`
   - `release-please-config.json`
   - `.release-please-manifest.json`
+- Release Please now uses plain `v*` tags (no package/component prefix).
 
 ### Planned
 
