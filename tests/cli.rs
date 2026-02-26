@@ -181,10 +181,10 @@ fn non_init_commands_fallback_to_legacy_identity_path() {
     get_cmd.args(["get", "API_KEY"]).assert().success().stdout("legacy-secret\n");
 }
 
-fn legacy_identity_path_for_test(home: &Path, _temp: &TempDir) -> PathBuf {
+fn legacy_identity_path_for_test(_home: &Path, _temp: &TempDir) -> PathBuf {
     #[cfg(target_os = "macos")]
     {
-        home.join("Library").join("Application Support").join("envkey").join("identity.age")
+        _home.join("Library").join("Application Support").join("envkey").join("identity.age")
     }
 
     #[cfg(not(target_os = "macos"))]
