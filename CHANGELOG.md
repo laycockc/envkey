@@ -9,6 +9,10 @@ Semantic Versioning.
 
 ### Added
 
+- Release Please automation configuration:
+  - `.github/workflows/release-please.yml`
+  - `release-please-config.json`
+  - `.release-please-manifest.json`
 - Planned M2+ work: team management, multi-environment access controls,
   injection workflows (`run`/`export`), and rotation commands.
 
