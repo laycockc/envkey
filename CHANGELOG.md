@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on Keep a Changelog and the project aims to follow
 Semantic Versioning.
 
+## [0.5.0-beta.1](https://github.com/laycockc/envkey/compare/v0.4.0-beta.1...v0.5.0-beta.1) (2026-02-27)
+
+
+### Features
+
+* add member update command and ci keygen workflow ([#15](https://github.com/laycockc/envkey/issues/15)) ([c3b84c4](https://github.com/laycockc/envkey/commit/c3b84c44f7f758a9604a6ec44be0f0ac9f66d6d4))
+
+
+### Bug Fixes
+
+* harden init membership and serialize envkey writes ([#12](https://github.com/laycockc/envkey/issues/12)) ([f21871f](https://github.com/laycockc/envkey/commit/f21871f4614aeb40bb129822cab102e37ebd746e))
+
 ## [0.4.0-beta.1](https://github.com/claycock96/envkey/compare/v0.3.0-beta.1...v0.4.0-beta.1) (2026-02-26)
 
 
